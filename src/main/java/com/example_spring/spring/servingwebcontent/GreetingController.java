@@ -54,6 +54,6 @@ public class GreetingController {
     public String allOrders(Model model){
         List<OrdersEntity> ordersEntityList = orderService.getAllOrders();
         model.addAttribute("orders", ordersEntityList);
-        return "allorders";
+        return "all_orders";
     }
 }
