@@ -30,6 +30,16 @@ public class OrdersEntity {
         return idOrder;
     }
 
+    public OrdersEntity() {
+    }
+
+    public OrdersEntity(String title, int amount, SellerEntity sellerBySelleridSeller, ConsumerEntity consumerByConsumerIdConsumer) {
+        this.title = title;
+        this.amount = amount;
+        SellerBySelleridSeller = sellerBySelleridSeller;
+        this.consumerByConsumerIdConsumer = consumerByConsumerIdConsumer;
+    }
+
     public void setIdOrder(int idOrder) {
         this.idOrder = idOrder;
     }

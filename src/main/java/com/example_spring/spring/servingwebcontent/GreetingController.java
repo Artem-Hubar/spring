@@ -3,8 +3,10 @@ package com.example_spring.spring.servingwebcontent;
 import com.example_spring.spring.db.ConsumerEntity;
 import com.example_spring.spring.db.OrdersEntity;
 import com.example_spring.spring.db.SellerEntity;
+import com.example_spring.spring.forms.OrdersForm;
 import com.example_spring.spring.services.ConsumerService;
 import com.example_spring.spring.services.OrderService;
+import com.example_spring.spring.services.SellerService;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
@@ -13,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
@@ -28,6 +32,8 @@ public class GreetingController {
     private ConsumerService consumerService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private SellerService sellerService;
 
     @GetMapping("/greeting")
     public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) {
@@ -56,4 +62,28 @@ public class GreetingController {
         model.addAttribute("orders", ordersEntityList);
         return "all_orders";
     }
+
+    @GetMapping("/create_orders")
+    public String createOrders(Model model){
+        OrdersForm form = new OrdersForm();
+        form.setConsumerEntityList(consumerService.getAllConsumers());
+        form.setSellerEntityList(sellerService.getAllSellors());
+        model.addAttribute("form", form);
+        out.println(1231);
+        return "create_orders";
+    }
+
+
+//    @PostMapping("/save")
+//    public String saveBooks(@ModelAttribute OrdersForm form, Model model) {
+//        SellerEntity selectedSeller = form.getSelectedSeller();
+//        ConsumerEntity selectedConsumer = form.getSelectedConsumer();
+//        out.println("123124");
+//        if (selectedSeller != null && selectedConsumer != null) {
+//            orderService.save(new OrdersEntity(form.getTitle(), form.getAmount(), selectedSeller, selectedConsumer));
+//        }
+//        return "redirect:/all_orders";
+//    }
+
+
 }
