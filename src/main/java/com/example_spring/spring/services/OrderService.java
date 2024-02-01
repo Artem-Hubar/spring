@@ -23,4 +23,9 @@ public class OrderService {
     public List<OrdersEntity> getAllOrders(){
         return orderRepository.findAll();
     }
+
+
+    public void deleteOrderByEntity(OrdersEntity entity){
+        orderRepository.delete(entity);
+    }
 }

@@ -3,14 +3,11 @@ package com.example_spring.spring.servingwebcontent;
 import com.example_spring.spring.db.ConsumerEntity;
 import com.example_spring.spring.db.OrdersEntity;
 import com.example_spring.spring.db.SellerEntity;
+import com.example_spring.spring.forms.OrderDeleteForm;
 import com.example_spring.spring.forms.OrdersForm;
 import com.example_spring.spring.services.ConsumerService;
 import com.example_spring.spring.services.OrderService;
 import com.example_spring.spring.services.SellerService;
-import org.hibernate.SessionFactory;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -74,16 +71,35 @@ public class GreetingController {
     }
 
 
-//    @PostMapping("/save")
-//    public String saveBooks(@ModelAttribute OrdersForm form, Model model) {
-//        SellerEntity selectedSeller = form.getSelectedSeller();
-//        ConsumerEntity selectedConsumer = form.getSelectedConsumer();
-//        out.println("123124");
-//        if (selectedSeller != null && selectedConsumer != null) {
-//            orderService.save(new OrdersEntity(form.getTitle(), form.getAmount(), selectedSeller, selectedConsumer));
-//        }
-//        return "redirect:/all_orders";
-//    }
+    @PostMapping("/save")
+    public String saveBooks(@ModelAttribute OrdersForm form, Model model) {
+        SellerEntity selectedSeller = form.getSelectedSeller();
+        ConsumerEntity selectedConsumer = form.getSelectedConsumer();
 
+        out.println("test");
+             if (selectedSeller != null && selectedConsumer != null) {
+                 OrdersEntity order = new OrdersEntity();
+                 order.setTitle(form.getTitle());
+                 order.setAmount(form.getAmount());
+                 order.setSellerBySelleridSeller(selectedSeller);
+                 order.setConsumerByConsumerIdConsumer(selectedConsumer); // Установка соответствующего потребителя
+                 orderService.save(order);
+        }
+        return "redirect:/all_orders";
+    }
 
+    @GetMapping("/delete_orders")
+    public String deleteOrders(Model model){
+        List<OrdersEntity> ordersEntityList = orderService.getAllOrders();
+
+        model.addAttribute("orders", ordersEntityList);
+        model.addAttribute("form", new OrderDeleteForm());
+        return "delete_orders";
+    }
+
+    @PostMapping("/post_delete_order")
+    public String postDeleteOrder(@ModelAttribute OrderDeleteForm form){
+        orderService.deleteOrderByEntity(form.getOrdersEntity());
+        return "redirect:/all_orders";
+    }
 }

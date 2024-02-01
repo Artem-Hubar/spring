@@ -1,39 +1,57 @@
-<form action="#" th:action="@{/save}" th:object="${form}" method="post">
-  <fieldset>
-    <input type="submit" id="submitButton" th:value="Save">
-    <table>
-      <thead>
-      <tr>
-        <th>Title</th>
-        <th>Author</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <td>
-          <label for="title">Title:</label>
-          <input type="text" id="title" th:field="*{title}" />
-          <label for="amount">Amount:</label>
-          <input type="number" id="amount" th:field="*{amount}" />
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Layout</title>
 
-          <select name="consumerName">
-            <option th:each="consumer : ${form.getConsumerEntityList}"
-                    th:value="${consumer}"
-                    th:text="${consumer.getIdConsumer} + ' ' +${consumer.getName}">
-            </option>
-          </select>
-        </td>
-        <td>
-          <select name="selectedSeller">
-            <option th:each="seller : ${form.getSelectedConsumer}"
-                    th:value="${seller.getidSeller}"
-                    th:text="${seller.getidSeller} + ' ' + ${seller.getName}">
-            </option>
+</head>
+<body>
+<div th:insert="~{layout :: nav}"></div>
+<!-- Указываем, что страница наследуется от layout.html -->
+<div>
 
-          </select>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </fieldset>
-</form>
+
+
+    <form action="#" th:action="@{/save}" th:object="${form}" method="post">
+      <fieldset>
+        <input type="submit" id="submitButton" th:value="Save">
+        <table>
+          <thead>
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+
+            <label for="title">Title:</label>
+            <input type="text" id="title" th:field="*{title}" />
+            <label for="amount">Amount:</label>
+            <input type="number" id="amount" th:field="*{amount}" />
+            <td>
+              <select name="selectedSeller" required="true" th:field="*{selectedSeller}">
+                <option th:each="seller : ${form.getSellerEntityList()}"
+                        th:value="${seller.getidSeller}"
+                        th:text="${seller.getidSeller()} + ' ' + ${seller.getName}">
+                </option>
+              </select>
+            </td>
+            <td>
+              <select name="selectedConsumer" th:field="*{selectedConsumer}">
+                <option th:each="consumer : ${form.getConsumerEntityList()}"
+                        th:value="${consumer.getIdConsumer}"
+                        th:text="${consumer.getIdConsumer} + ' ' +${consumer.getName}">
+                </option>
+              </select>
+            </td>
+
+          </tr>
+          </tbody>
+        </table>
+      </fieldset>
+    </form>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<div th:insert="~{layout :: nav}"></div>
+<div>
+
+
+        <table>
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.getIdOrder}">Onions</td>
+                <td th:text="${order.getTitle}">Onions</td>
+                <td th:text="${order.getAmount}">Onions</td>
+                <td th:text="${order.getConsumerByConsumerIdConsumer.getName}">Onions</td>
+                <td th:text="${order.getSellerBySelleridSeller.getName}">Onions</td>
+                <td>
+                    <form action="#" th:action="@{/post_delete_order}" th:object="${form}" method="post">
+                        <input type="hidden" th:value="${order.idOrder}" th:name="ordersEntity">
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
+            </tr>
+        </table>
+
+
+
+
+</div>
+</body>
+</html>
