@@ -102,4 +102,5 @@ public class GreetingController {
         orderService.deleteOrderByEntity(form.getOrdersEntity());
         return "redirect:/all_orders";
     }
+
 }
