@@ -8,7 +8,12 @@ import com.example_spring.spring.forms.OrdersForm;
 import com.example_spring.spring.services.ConsumerService;
 import com.example_spring.spring.services.OrderService;
 import com.example_spring.spring.services.SellerService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +21,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.net.http.HttpRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,15 +39,22 @@ public class GreetingController {
     private SellerService sellerService;
 
     @GetMapping("/greeting")
-    public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) {
+    public String greeting(@RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model, @AuthenticationPrincipal UserDetails userDetails) {
         ConsumerEntity consumer = null;
-        if (name != null) {
+//        for (GrantedAuthority authority : userDetails.getAuthorities()) {
+//            String role = authority.getAuthority();
+//            // Делаем что-то с ролью
+//            System.out.println("Роль пользователя: " + role);
+//        }
+        if (name != null && userDetails != null) {
             try {
                 int id = Integer.parseInt(name);
                 consumer = consumerService.getConsumerById(id);
             } catch (NumberFormatException e) {
                 // Если параметр не является числом, то обрабатываем его как имя пользователя
-                model.addAttribute("name", name);
+//                model.addAttribute("name", name);
+                model.addAttribute("name", userDetails.getUsername());
+
                 return "greeting";
             }
         }
@@ -50,18 +63,23 @@ public class GreetingController {
         } else {
             model.addAttribute("name", "Anonymous");
         }
+        if (userDetails != null){
+            out.println(userDetails.getUsername());
+            model.addAttribute("name", userDetails.getUsername());
+        }
+
         return "greeting";
     }
 
     @GetMapping("/all_orders")
-    public String allOrders(Model model){
+    public String allOrders(Model model) {
         List<OrdersEntity> ordersEntityList = orderService.getAllOrders();
         model.addAttribute("orders", ordersEntityList);
         return "all_orders";
     }
 
     @GetMapping("/create_orders")
-    public String createOrders(Model model){
+    public String createOrders(Model model) {
         OrdersForm form = new OrdersForm();
         form.setConsumerEntityList(consumerService.getAllConsumers());
         form.setSellerEntityList(sellerService.getAllSellors());
@@ -77,19 +95,19 @@ public class GreetingController {
         ConsumerEntity selectedConsumer = form.getSelectedConsumer();
 
         out.println("test");
-             if (selectedSeller != null && selectedConsumer != null) {
-                 OrdersEntity order = new OrdersEntity();
-                 order.setTitle(form.getTitle());
-                 order.setAmount(form.getAmount());
-                 order.setSellerBySelleridSeller(selectedSeller);
-                 order.setConsumerByConsumerIdConsumer(selectedConsumer); // Установка соответствующего потребителя
-                 orderService.save(order);
+        if (selectedSeller != null && selectedConsumer != null) {
+            OrdersEntity order = new OrdersEntity();
+            order.setTitle(form.getTitle());
+            order.setAmount(form.getAmount());
+            order.setSellerBySelleridSeller(selectedSeller);
+            order.setConsumerByConsumerIdConsumer(selectedConsumer); // Установка соответствующего потребителя
+            orderService.save(order);
         }
         return "redirect:/all_orders";
     }
 
     @GetMapping("/delete_orders")
-    public String deleteOrders(Model model){
+    public String deleteOrders(Model model) {
         List<OrdersEntity> ordersEntityList = orderService.getAllOrders();
 
         model.addAttribute("orders", ordersEntityList);
@@ -98,9 +116,23 @@ public class GreetingController {
     }
 
     @PostMapping("/post_delete_order")
-    public String postDeleteOrder(@ModelAttribute OrderDeleteForm form){
+    public String postDeleteOrder(@ModelAttribute OrderDeleteForm form) {
         orderService.deleteOrderByEntity(form.getOrdersEntity());
         return "redirect:/all_orders";
     }
 
+
+//    LOGIN
+
+
+    @GetMapping("/custom-login")
+    public String login() {
+        return "custom-login";
+    }
+
+    @GetMapping("/custom-logout")
+    public String logout() {
+        SecurityContextHolder.getContext().setAuthentication(null);
+        return "redirect:/custom-login?logout";
+    }
 }
